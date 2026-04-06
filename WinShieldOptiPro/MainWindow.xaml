@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WinShieldOptiPro"
         mc:Ignorable="d"
-        Title="WinShield OptiPro" Height="768" Width="1366" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Title="WinShield OptiPro" MinHeight="600" MinWidth="1024" Height="768" Width="1366" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         MouseDown="Window_MouseDown"
         MouseMove="Window_MouseMove"
         MouseUp="Window_MouseUp">
@@ -20,581 +20,93 @@
         </Grid.Background>
         
         <!-- 主网格 -->
-        <Border Background="#121212" Margin="10" CornerRadius="12">
+        <Border Background="{StaticResource PrimaryBackground}" Margin="10" CornerRadius="12">
             <Border.Effect>
-                <DropShadowEffect Color="#00BFFF" BlurRadius="20" Opacity="0.3"/>
+                <DropShadowEffect Color="{StaticResource AccentColor}" BlurRadius="20" Opacity="0.3"/>
             </Border.Effect>
             <Grid>
                 <!-- 顶部控制栏 -->
-                <Border Height="60" Background="#1E1E1E">
+                <Border Height="60" Background="{StaticResource SecondaryBackground}">
                     <Grid>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0">
-                            <TextBlock Text="WinShield OptiPro" FontSize="18" FontWeight="Bold" Foreground="#00BFFF"/>
-                            <TextBlock Text=" - 空闲" FontSize="14" Foreground="#888888" Margin="10,0,0,0"/>
+                            <TextBlock Text="WinShield OptiPro" Style="{StaticResource SubtitleText}"/>
+                            <TextBlock Text=" - 空闲" Style="{StaticResource CaptionText}" Margin="10,0,0,0"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0">
-                            <Button Content="🌙" Width="30" Height="30" Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" Margin="0,0,10,0"/>
-                            <Button Content="📱" Width="30" Height="30" Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" Margin="0,0,10,0"/>
-                            <Button Content="-" Width="30" Height="30" Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" Margin="0,0,10,0" Click="MinimizeButton_Click"/>
-                            <Button Content="✕" Width="30" Height="30" Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" Click="CloseButton_Click"/>
+                            <Button Content="🌙" Width="30" Height="30" Background="Transparent" Foreground="{StaticResource TextPrimary}" BorderThickness="0" Margin="0,0,10,0" AutomationProperties.Name="主题切换" AutomationProperties.Description="切换应用程序主题" TabIndex="1"/>
+                            <Button Content="📱" Width="30" Height="30" Background="Transparent" Foreground="{StaticResource TextPrimary}" BorderThickness="0" Margin="0,0,10,0" AutomationProperties.Name="设备管理" AutomationProperties.Description="管理设备设置" TabIndex="2"/>
+                            <Button Content="-" Width="30" Height="30" Background="Transparent" Foreground="{StaticResource TextPrimary}" BorderThickness="0" Margin="0,0,10,0" Click="MinimizeButton_Click" AutomationProperties.Name="最小化" AutomationProperties.Description="最小化应用程序窗口" TabIndex="3"/>
+                            <Button Content="✕" Width="30" Height="30" Background="Transparent" Foreground="{StaticResource TextPrimary}" BorderThickness="0" Click="CloseButton_Click" AutomationProperties.Name="关闭" AutomationProperties.Description="关闭应用程序" TabIndex="4"/>
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- 左侧导航栏 -->
-                <Grid Margin="0,60,0,40" Width="200" Background="#1A1A1A" HorizontalAlignment="Left">
-                    <StackPanel Orientation="Vertical" Margin="0,20,0,0">
-                        <Button x:Name="HomeButton" Content="首页" Width="180" Height="50" Foreground="#FFFFFF" Margin="10,0,10,10" Click="HomeButton_Click">
-                            <Button.Effect>
-                                <DropShadowEffect Color="#00BFFF" BlurRadius="10" Opacity="0.8"/>
-                            </Button.Effect>
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Background" Value="#00BFFF"/>
-                                    <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#2A2A2A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="HardwareOverviewButton" Content="硬件概览" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="HardwareOverviewButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="DiskSpaceAnalyzerButton" Content="空间分析" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="DiskSpaceAnalyzerButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="JunkCleanButton" Content="垃圾清理" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="JunkCleanButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="SystemOptimizeButtonNav" Content="系统优化" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="SystemOptimizeButtonNav_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="MemoryOptimizerButton" Content="内存优化" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="MemoryOptimizerButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="AppDataMonitorButton" Content="AppData监控" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="AppDataMonitorButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="SoftwareUninstallerButton" Content="软件卸载" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="SoftwareUninstallerButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="SuperSlimmerButton" Content="超级瘦身" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="SuperSlimmerButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="SystemToolboxButton" Content="系统工具箱" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="SystemToolboxButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="PopupBlockerButton" Content="弹窗拦截" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="PopupBlockerButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="FreezeRestoreButton" Content="冰点还原" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="FreezeRestoreButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="SystemScannerButton" Content="静默查杀" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="SystemScannerButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="FileShredderButton" Content="文件粉碎" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="FileShredderButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button x:Name="SettingsAndSecurityButton" Content="基础设置&amp;安全中心" Width="180" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" Margin="10,0,10,10" Click="SettingsAndSecurityButton_Click">
-                            <Button.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </TransformGroup>
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="RenderTransform">
-                                                            <Setter.Value>
-                                                                <TransformGroup>
-                                                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                    <TranslateTransform X="0" Y="-2"/>
-                                                                </TransformGroup>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="BorderBrush" Value="#00BFFF"/>
-                                                        <Setter Property="Background" Value="#3A3A3A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </StackPanel>
-                </Grid>
+                <!-- 主内容网格 -->
+                <Grid Margin="0,60,0,40">
+                    <!-- 左侧导航栏 -->
+                    <Grid Width="200" Background="{StaticResource TertiaryBackground}" HorizontalAlignment="Left">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Orientation="Vertical" Margin="0,20,0,20">
+                                <Button x:Name="HomeButton" Content="首页" Click="HomeButton_Click" Style="{StaticResource PrimaryButton}" Width="180" Height="50" Margin="10,0,10,10" AutomationProperties.Name="首页" AutomationProperties.Description="返回首页概览" TabIndex="5">
+                                <Button.Effect>
+                                    <DropShadowEffect Color="{StaticResource AccentColor}" BlurRadius="10" Opacity="0.8"/>
+                                </Button.Effect>
+                            </Button>
+                            <Button x:Name="HardwareOverviewButton" Content="硬件概览" Click="HardwareOverviewButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="硬件概览" AutomationProperties.Description="查看硬件信息" TabIndex="6"/>
+                            <Button x:Name="DiskSpaceAnalyzerButton" Content="空间分析" Click="DiskSpaceAnalyzerButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="空间分析" AutomationProperties.Description="分析磁盘空间使用情况" TabIndex="7"/>
+                            <Button x:Name="JunkCleanButton" Content="垃圾清理" Click="JunkCleanButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="垃圾清理" AutomationProperties.Description="清理系统垃圾文件" TabIndex="8"/>
+                            <Button x:Name="SystemOptimizeButtonNav" Content="系统优化" Click="SystemOptimizeButtonNav_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="系统优化" AutomationProperties.Description="优化系统性能" TabIndex="9"/>
+                            <Button x:Name="MemoryOptimizerButton" Content="内存优化" Click="MemoryOptimizerButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="内存优化" AutomationProperties.Description="优化内存使用" TabIndex="10"/>
+                            <Button x:Name="AppDataMonitorButton" Content="AppData监控" Click="AppDataMonitorButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="AppData监控" AutomationProperties.Description="监控应用数据使用" TabIndex="11"/>
+                            <Button x:Name="SoftwareUninstallerButton" Content="软件卸载" Click="SoftwareUninstallerButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="软件卸载" AutomationProperties.Description="卸载不需要的软件" TabIndex="12"/>
+                            <Button x:Name="SuperSlimmerButton" Content="超级瘦身" Click="SuperSlimmerButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="超级瘦身" AutomationProperties.Description="深度清理系统" TabIndex="13"/>
+                            <Button x:Name="SystemToolboxButton" Content="系统工具箱" Click="SystemToolboxButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="系统工具箱" AutomationProperties.Description="访问系统工具" TabIndex="14"/>
+                            <Button x:Name="PopupBlockerButton" Content="弹窗拦截" Click="PopupBlockerButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="弹窗拦截" AutomationProperties.Description="拦截弹窗广告" TabIndex="15"/>
+                            <Button x:Name="FreezeRestoreButton" Content="冰点还原" Click="FreezeRestoreButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="冰点还原" AutomationProperties.Description="系统还原功能" TabIndex="16"/>
+                            <Button x:Name="SystemScannerButton" Content="静默查杀" Click="SystemScannerButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="静默查杀" AutomationProperties.Description="扫描系统安全" TabIndex="17"/>
+                            <Button x:Name="FileShredderButton" Content="文件粉碎" Click="FileShredderButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="文件粉碎" AutomationProperties.Description="安全删除文件" TabIndex="18"/>
+                            <Button x:Name="SettingsAndSecurityButton" Content="基础设置&amp;安全中心" Click="SettingsAndSecurityButton_Click" Style="{StaticResource NavButton}" AutomationProperties.Name="基础设置和安全中心" AutomationProperties.Description="管理应用设置和安全选项" TabIndex="19"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
 
-                <!-- 中央内容区 -->
-                <Grid Margin="200,60,0,40" Background="#121212">
+                    <!-- 中央内容区 -->
+                    <Grid Margin="200,0,0,0" Background="{StaticResource PrimaryBackground}">
+                        <!-- 加载指示器 -->
+                        <Grid x:Name="LoadingIndicator" Visibility="Collapsed" Background="{StaticResource PrimaryBackground}" Opacity="0.9">
+                            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Ellipse Width="60" Height="60" Stroke="{StaticResource AccentColor}" StrokeThickness="4">
+                                    <Ellipse.RenderTransform>
+                                        <RotateTransform CenterX="30" CenterY="30"/>
+                                    </Ellipse.RenderTransform>
+                                    <Ellipse.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard Storyboard="{StaticResource LoadingAnimation}"/>
+                                        </EventTrigger>
+                                    </Ellipse.Triggers>
+                                </Ellipse>
+                                <TextBlock Text="加载中..." Style="{StaticResource BodyText}" Margin="0,80,0,0" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Grid>
                     <!-- 首页概览模块 -->
                     <Grid x:Name="HomePage" Visibility="Visible">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <!-- 标题 -->
-                        <TextBlock Text="首页概览" FontSize="24" FontWeight="Bold" Foreground="#00BFFF" Margin="20,20,0,0">
+                        <TextBlock Text="首页概览" Style="{StaticResource TitleText}" Margin="20,20,0,0">
                             <TextBlock.Effect>
-                                <DropShadowEffect Color="#00BFFF" BlurRadius="10" Opacity="0.8"/>
+                                <DropShadowEffect Color="{StaticResource AccentColor}" BlurRadius="10" Opacity="0.8"/>
                             </TextBlock.Effect>
                         </TextBlock>
 
                         <!-- C盘空间信息 -->
-                        <Border Margin="20,60,20,0" Background="#1E1E1E" CornerRadius="8" BorderThickness="1" BorderBrush="#00BFFF">
-                            <Border.Effect>
-                                <DropShadowEffect Color="#00BFFF" BlurRadius="10" Opacity="0.3"/>
-                            </Border.Effect>
-                            <Grid Margin="20">
-                                <TextBlock Text="C盘空间信息" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,20"/>
+                        <Border Margin="20,60,20,0" Style="{StaticResource CardBorder}">
+                            <Grid>
+                                <TextBlock Text="C盘空间信息" Style="{StaticResource SubtitleText}" Margin="0,0,0,20"/>
                                 <Grid Margin="0,40,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -603,74 +115,67 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Text="总容量" FontSize="12" Foreground="#888888"/>
-                                        <TextBlock x:Name="TotalSpaceText" Text="0 GB" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,5,0,0">
+                                        <TextBlock Text="总容量" Style="{StaticResource CaptionText}"/>
+                                        <TextBlock x:Name="TotalSpaceText" Text="0 GB" Style="{StaticResource BodyText}" FontWeight="Bold" Margin="0,5,0,0">
                                             <TextBlock.Effect>
-                                                <DropShadowEffect Color="#FFFFFF" BlurRadius="5" Opacity="0.5"/>
+                                                <DropShadowEffect Color="{StaticResource TextPrimary}" BlurRadius="5" Opacity="0.5"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="已用空间" FontSize="12" Foreground="#888888"/>
-                                        <TextBlock x:Name="UsedSpaceText" Text="0 GB" FontSize="16" FontWeight="Bold" Foreground="#FF4500" Margin="0,5,0,0">
+                                        <TextBlock Text="已用空间" Style="{StaticResource CaptionText}"/>
+                                        <TextBlock x:Name="UsedSpaceText" Text="0 GB" Style="{StaticResource BodyText}" FontWeight="Bold" Foreground="{StaticResource WarningColor}" Margin="0,5,0,0">
                                             <TextBlock.Effect>
-                                                <DropShadowEffect Color="#FF4500" BlurRadius="5" Opacity="0.5"/>
+                                                <DropShadowEffect Color="{StaticResource WarningColor}" BlurRadius="5" Opacity="0.5"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock Text="剩余空间" FontSize="12" Foreground="#888888"/>
-                                        <TextBlock x:Name="FreeSpaceText" Text="0 GB" FontSize="16" FontWeight="Bold" Foreground="#00FF00" Margin="0,5,0,0">
+                                        <TextBlock Text="剩余空间" Style="{StaticResource CaptionText}"/>
+                                        <TextBlock x:Name="FreeSpaceText" Text="0 GB" Style="{StaticResource BodyText}" FontWeight="Bold" Foreground="{StaticResource SuccessColor}" Margin="0,5,0,0">
                                             <TextBlock.Effect>
-                                                <DropShadowEffect Color="#00FF00" BlurRadius="5" Opacity="0.5"/>
+                                                <DropShadowEffect Color="{StaticResource SuccessColor}" BlurRadius="5" Opacity="0.5"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
                                     </StackPanel>
                                     <StackPanel Grid.Column="3">
-                                        <TextBlock Text="占用占比" FontSize="12" Foreground="#888888"/>
-                                        <TextBlock x:Name="UsagePercentageText" Text="0%" FontSize="16" FontWeight="Bold" Foreground="#00BFFF" Margin="0,5,0,0">
+                                        <TextBlock Text="占用占比" Style="{StaticResource CaptionText}"/>
+                                        <TextBlock x:Name="UsagePercentageText" Text="0%" Style="{StaticResource BodyText}" FontWeight="Bold" Foreground="{StaticResource AccentColor}" Margin="0,5,0,0">
                                             <TextBlock.Effect>
-                                                <DropShadowEffect Color="#00BFFF" BlurRadius="5" Opacity="0.5"/>
+                                                <DropShadowEffect Color="{StaticResource AccentColor}" BlurRadius="5" Opacity="0.5"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
                                     </StackPanel>
                                 </Grid>
                                 <!-- 空间进度条 -->
-                                <ProgressBar x:Name="SpaceProgressBar" Height="10" Margin="0,100,0,0" Background="#2A2A2A" BorderThickness="0">
-                                    <ProgressBar.Effect>
-                                        <DropShadowEffect Color="#00BFFF" BlurRadius="5" Opacity="0.5"/>
-                                    </ProgressBar.Effect>
-                                </ProgressBar>
+                                <ProgressBar x:Name="SpaceProgressBar" Style="{StaticResource CustomProgressBar}" Margin="0,100,0,0"/>
                             </Grid>
                         </Border>
 
                         <!-- 系统健康度评分 -->
-                        <Border Margin="20,200,20,0" Background="#1E1E1E" CornerRadius="8" BorderThickness="1" BorderBrush="#00BFFF">
-                            <Border.Effect>
-                                <DropShadowEffect Color="#00BFFF" BlurRadius="10" Opacity="0.3"/>
-                            </Border.Effect>
-                            <Grid Margin="20">
-                                <TextBlock Text="系统健康度" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,20"/>
+                        <Border Margin="20,200,20,0" Style="{StaticResource CardBorder}">
+                            <Grid>
+                                <TextBlock Text="系统健康度" Style="{StaticResource SubtitleText}" Margin="0,0,0,20"/>
                                 <Grid Margin="0,40,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="200"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock x:Name="HealthScoreText" Text="100" FontSize="48" FontWeight="Bold" Foreground="#00FF00">
+                                        <TextBlock x:Name="HealthScoreText" Text="100" FontSize="48" FontWeight="Bold" Foreground="{StaticResource SuccessColor}">
                                             <TextBlock.Effect>
-                                                <DropShadowEffect Color="#00FF00" BlurRadius="15" Opacity="0.8"/>
+                                                <DropShadowEffect Color="{StaticResource SuccessColor}" BlurRadius="15" Opacity="0.8"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
-                                        <TextBlock Text="健康度评分" FontSize="12" Foreground="#888888" Margin="0,5,0,0"/>
+                                        <TextBlock Text="健康度评分" Style="{StaticResource CaptionText}" Margin="0,5,0,0"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Margin="20,0,0,0">
-                                        <TextBlock x:Name="RiskWarningText" Text="系统状态良好，无风险" FontSize="14" Foreground="#00FF00">
+                                        <TextBlock x:Name="RiskWarningText" Text="系统状态良好，无风险" Style="{StaticResource BodyText}" Foreground="{StaticResource SuccessColor}">
                                             <TextBlock.Effect>
-                                                <DropShadowEffect Color="#00FF00" BlurRadius="5" Opacity="0.5"/>
+                                                <DropShadowEffect Color="{StaticResource SuccessColor}" BlurRadius="5" Opacity="0.5"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
-                                        <TextBlock Text="C盘空间充足，系统运行稳定" FontSize="12" Foreground="#888888" Margin="0,10,0,0"/>
+                                        <TextBlock Text="C盘空间充足，系统运行稳定" Style="{StaticResource CaptionText}" Margin="0,10,0,0"/>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -682,111 +187,60 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="QuickCleanButton" Content="一键快速清理" Width="200" Height="60" Background="#00BFFF" Foreground="#FFFFFF" FontSize="16" FontWeight="Bold" Grid.Column="0" Margin="0,0,20,0" Click="QuickCleanButton_Click">
+                            <Button x:Name="QuickCleanButton" Content="一键快速清理" Click="QuickCleanButton_Click" Style="{StaticResource PrimaryButton}" Width="200" Height="60" Grid.Column="0" Margin="0,0,20,0" AutomationProperties.Name="一键快速清理" AutomationProperties.Description="快速清理系统垃圾" TabIndex="20">
                                 <Button.Effect>
-                                    <DropShadowEffect Color="#00BFFF" BlurRadius="10" Opacity="0.8"/>
+                                    <DropShadowEffect Color="{StaticResource AccentColor}" BlurRadius="10" Opacity="0.8"/>
                                 </Button.Effect>
-                                <Button.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                        <TranslateTransform X="0" Y="0"/>
-                                    </TransformGroup>
-                                </Button.RenderTransform>
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="RenderTransform">
-                                                                <Setter.Value>
-                                                                    <TransformGroup>
-                                                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                        <TranslateTransform X="0" Y="-2"/>
-                                                                    </TransformGroup>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                            <Setter Property="BorderBrush" Value="#FFFFFF"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </Button.Style>
                             </Button>
-                            <Button x:Name="SystemOptimizeButton" Content="一键系统优化" Width="200" Height="60" Background="#00BFFF" Foreground="#FFFFFF" FontSize="16" FontWeight="Bold" Grid.Column="1" Margin="20,0,0,0" Click="SystemOptimizeButton_Click">
+                            <Button x:Name="SystemOptimizeButton" Content="一键系统优化" Click="SystemOptimizeButton_Click" Style="{StaticResource SecondaryButton}" Width="200" Height="60" Grid.Column="1" Margin="20,0,0,0" AutomationProperties.Name="一键系统优化" AutomationProperties.Description="优化系统性能" TabIndex="21">
                                 <Button.Effect>
-                                    <DropShadowEffect Color="#00BFFF" BlurRadius="10" Opacity="0.8"/>
+                                    <DropShadowEffect Color="{StaticResource AccentColor}" BlurRadius="10" Opacity="0.8"/>
                                 </Button.Effect>
-                                <Button.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
-                                        <TranslateTransform X="0" Y="0"/>
-                                    </TransformGroup>
-                                </Button.RenderTransform>
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderThickness="2" BorderBrush="Transparent">
-                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="RenderTransform">
-                                                                <Setter.Value>
-                                                                    <TransformGroup>
-                                                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-                                                                        <TranslateTransform X="0" Y="-2"/>
-                                                                    </TransformGroup>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                            <Setter Property="BorderBrush" Value="#FFFFFF"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </Button.Style>
                             </Button>
                         </Grid>
 
                         <!-- 近期清理记录 -->
-                        <Border Margin="20,400,20,40" Background="#1E1E1E" CornerRadius="8" BorderThickness="1" BorderBrush="#00BFFF">
-                            <Border.Effect>
-                                <DropShadowEffect Color="#00BFFF" BlurRadius="10" Opacity="0.3"/>
-                            </Border.Effect>
-                            <Grid Margin="20">
-                                <TextBlock Text="近期清理记录" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,20"/>
-                                <DataGrid x:Name="CleaningHistoryDataGrid" AutoGenerateColumns="False" Background="#121212" Foreground="#FFFFFF" BorderThickness="0">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="清理时间" Binding="{Binding Time}" Width="150"/>
-                                        <DataGridTextColumn Header="清理类型" Binding="{Binding Type}" Width="120"/>
-                                        <DataGridTextColumn Header="释放空间" Binding="{Binding FreedSpace}" Width="100"/>
-                                        <DataGridTextColumn Header="状态" Binding="{Binding Status}" Width="*"/>
-                                    </DataGrid.Columns>
-                                    <DataGrid.Effect>
-                                        <DropShadowEffect Color="#00BFFF" BlurRadius="5" Opacity="0.2"/>
-                                    </DataGrid.Effect>
-                                </DataGrid>
+                        <Border Margin="20,400,20,40" Style="{StaticResource CardBorder}">
+                            <Grid>
+                                <TextBlock Text="近期清理记录" Style="{StaticResource SubtitleText}" Margin="0,0,0,20"/>
+                                <DataGrid x:Name="CleaningHistoryDataGrid" Style="{StaticResource CustomDataGrid}" AutoGenerateColumns="False"
+                                  VirtualizingPanel.IsVirtualizing="True"
+                                  VirtualizingPanel.VirtualizationMode="Recycling"
+                                  EnableRowVirtualization="True"
+                                  EnableColumnVirtualization="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="清理时间" Binding="{Binding Time}" Width="150"/>
+                                    <DataGridTextColumn Header="清理类型" Binding="{Binding Type}" Width="120"/>
+                                    <DataGridTextColumn Header="释放空间" Binding="{Binding FreedSpace}" Width="100"/>
+                                    <DataGridTextColumn Header="状态" Binding="{Binding Status}" Width="*"/>
+                                </DataGrid.Columns>
+                                <DataGrid.Effect>
+                                    <DropShadowEffect Color="{StaticResource AccentColor}" BlurRadius="5" Opacity="0.2"/>
+                                </DataGrid.Effect>
+                            </DataGrid>
                             </Grid>
                         </Border>
                     </Grid>
                     
                     <!-- 空间分析模块 -->
                     <Grid x:Name="DiskSpaceAnalyzerPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:DiskSpaceAnalyzer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 垃圾清理模块 -->
                     <Grid x:Name="JunkCleanPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <!-- 标题 -->
                         <TextBlock Text="全量垃圾清理" FontSize="24" FontWeight="Bold" Foreground="#00BFFF" Margin="20,20,0,0"/>
                         
@@ -796,37 +250,40 @@
                                 <TextBlock Text="清理选项" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,20"/>
                                 
                                 <!-- 常规系统清理 -->
-                                <Expander Header="常规系统清理" FontSize="14" FontWeight="Bold" Foreground="#00BFFF" Margin="0,40,0,0" IsExpanded="True">
-                                    <StackPanel Margin="20,10,0,10">
-                                        <CheckBox x:Name="RecycleBinCheckBox" Content="回收站" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="TempFilesCheckBox" Content="系统临时文件" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="LogFilesCheckBox" Content="日志文件" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="PrefetchCheckBox" Content="预读文件" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="ThumbnailCacheCheckBox" Content="缩略图缓存" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="BrowserCacheCheckBox" Content="浏览器缓存/历史记录" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="OfficeCacheCheckBox" Content="Office缓存" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="UpdateCacheCheckBox" Content="系统更新残留包" Margin="0,5,0,0" Foreground="#FFFFFF"/>
+                                <Expander Header="常规系统清理" FontSize="14" FontWeight="Bold" Foreground="#00BFFF" Margin="0,40,0,0" IsExpanded="True" AutomationProperties.Name="常规系统清理" AutomationProperties.Description="选择要清理的常规系统文件">
+                                    <StackPanel Margin="20,10,0,10" AutomationProperties.LabeledBy="{Binding ElementName=RegularSystemCleanupHeader}">
+                                        <TextBlock x:Name="RegularSystemCleanupHeader" Text="常规系统清理选项" Visibility="Collapsed"/>
+                                        <CheckBox x:Name="RecycleBinCheckBox" Content="回收站" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="回收站" AutomationProperties.Description="清理回收站中的文件" TabIndex="25"/>
+                                        <CheckBox x:Name="TempFilesCheckBox" Content="系统临时文件" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="系统临时文件" AutomationProperties.Description="清理系统临时文件" TabIndex="26"/>
+                                        <CheckBox x:Name="LogFilesCheckBox" Content="日志文件" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="日志文件" AutomationProperties.Description="清理系统日志文件" TabIndex="27"/>
+                                        <CheckBox x:Name="PrefetchCheckBox" Content="预读文件" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="预读文件" AutomationProperties.Description="清理预读文件" TabIndex="28"/>
+                                        <CheckBox x:Name="ThumbnailCacheCheckBox" Content="缩略图缓存" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="缩略图缓存" AutomationProperties.Description="清理缩略图缓存" TabIndex="29"/>
+                                        <CheckBox x:Name="BrowserCacheCheckBox" Content="浏览器缓存/历史记录" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="浏览器缓存和历史记录" AutomationProperties.Description="清理浏览器缓存和历史记录" TabIndex="30"/>
+                                        <CheckBox x:Name="OfficeCacheCheckBox" Content="Office缓存" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="Office缓存" AutomationProperties.Description="清理Office应用程序缓存" TabIndex="31"/>
+                                        <CheckBox x:Name="UpdateCacheCheckBox" Content="系统更新残留包" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="系统更新残留包" AutomationProperties.Description="清理系统更新残留文件" TabIndex="32"/>
                                     </StackPanel>
                                 </Expander>
                                 
                                 <!-- 深层隐藏目录清理 -->
-                                <Expander Header="深层隐藏目录清理" FontSize="14" FontWeight="Bold" Foreground="#00BFFF" Margin="0,200,0,0" IsExpanded="True">
-                                    <StackPanel Margin="20,10,0,10">
-                                        <CheckBox x:Name="AppDataCheckBox" Content="AppData全目录" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="ProgramDataCheckBox" Content="ProgramData公共缓存" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="WindowsUpdateCacheCheckBox" Content="Windows更新下载缓存" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="WindowsOldCheckBox" Content="Windows.old" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="ErrorReportsCheckBox" Content="系统错误报告" Margin="0,5,0,0" Foreground="#FFFFFF"/>
+                                <Expander Header="深层隐藏目录清理" FontSize="14" FontWeight="Bold" Foreground="#00BFFF" Margin="0,200,0,0" IsExpanded="True" AutomationProperties.Name="深层隐藏目录清理" AutomationProperties.Description="选择要清理的深层隐藏目录">
+                                    <StackPanel Margin="20,10,0,10" AutomationProperties.LabeledBy="{Binding ElementName=DeepHiddenCleanupHeader}">
+                                        <TextBlock x:Name="DeepHiddenCleanupHeader" Text="深层隐藏目录清理选项" Visibility="Collapsed"/>
+                                        <CheckBox x:Name="AppDataCheckBox" Content="AppData全目录" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="AppData全目录" AutomationProperties.Description="清理AppData目录中的缓存文件" TabIndex="33"/>
+                                        <CheckBox x:Name="ProgramDataCheckBox" Content="ProgramData公共缓存" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="ProgramData公共缓存" AutomationProperties.Description="清理ProgramData目录中的公共缓存" TabIndex="34"/>
+                                        <CheckBox x:Name="WindowsUpdateCacheCheckBox" Content="Windows更新下载缓存" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="Windows更新下载缓存" AutomationProperties.Description="清理Windows更新下载的缓存文件" TabIndex="35"/>
+                                        <CheckBox x:Name="WindowsOldCheckBox" Content="Windows.old" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="Windows.old" AutomationProperties.Description="清理Windows.old目录" TabIndex="36"/>
+                                        <CheckBox x:Name="ErrorReportsCheckBox" Content="系统错误报告" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="系统错误报告" AutomationProperties.Description="清理系统错误报告文件" TabIndex="37"/>
                                     </StackPanel>
                                 </Expander>
                                 
                                 <!-- 基础注册表清理 -->
-                                <Expander Header="基础注册表清理" FontSize="14" FontWeight="Bold" Foreground="#00BFFF" Margin="0,350,0,0" IsExpanded="True">
-                                    <StackPanel Margin="20,10,0,10">
-                                        <CheckBox x:Name="InvalidRegistryCheckBox" Content="无效注册表项" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="UninstallResidueCheckBox" Content="软件卸载残留" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="InvalidShortcutsCheckBox" Content="无效快捷方式关联" Margin="0,5,0,0" Foreground="#FFFFFF"/>
-                                        <CheckBox x:Name="RedundantContextMenuCheckBox" Content="冗余右键菜单" Margin="0,5,0,0" Foreground="#FFFFFF"/>
+                                <Expander Header="基础注册表清理" FontSize="14" FontWeight="Bold" Foreground="#00BFFF" Margin="0,350,0,0" IsExpanded="True" AutomationProperties.Name="基础注册表清理" AutomationProperties.Description="选择要清理的注册表项">
+                                    <StackPanel Margin="20,10,0,10" AutomationProperties.LabeledBy="{Binding ElementName=RegistryCleanupHeader}">
+                                        <TextBlock x:Name="RegistryCleanupHeader" Text="基础注册表清理选项" Visibility="Collapsed"/>
+                                        <CheckBox x:Name="InvalidRegistryCheckBox" Content="无效注册表项" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="无效注册表项" AutomationProperties.Description="清理无效的注册表项" TabIndex="38"/>
+                                        <CheckBox x:Name="UninstallResidueCheckBox" Content="软件卸载残留" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="软件卸载残留" AutomationProperties.Description="清理软件卸载后残留的注册表项" TabIndex="39"/>
+                                        <CheckBox x:Name="InvalidShortcutsCheckBox" Content="无效快捷方式关联" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="无效快捷方式关联" AutomationProperties.Description="清理无效的快捷方式关联" TabIndex="40"/>
+                                        <CheckBox x:Name="RedundantContextMenuCheckBox" Content="冗余右键菜单" Margin="0,5,0,0" Foreground="#FFFFFF" AutomationProperties.Name="冗余右键菜单" AutomationProperties.Description="清理冗余的右键菜单项" TabIndex="41"/>
                                     </StackPanel>
                                 </Expander>
                             </Grid>
@@ -839,9 +296,9 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="ScanButton" Content="扫描垃圾" Width="150" Height="50" Background="#00BFFF" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" Grid.Column="0" Margin="0,0,10,0" Click="ScanButton_Click"/>
-                            <Button x:Name="PreviewButton" Content="预览清理" Width="150" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" Grid.Column="1" Margin="10,0,10,0" Click="PreviewButton_Click"/>
-                            <Button x:Name="CleanButton" Content="开始清理" Width="150" Height="50" Background="#00BFFF" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" Grid.Column="2" Margin="10,0,0,0" Click="CleanButton_Click"/>
+                            <Button x:Name="ScanButton" Content="扫描垃圾" Width="150" Height="50" Background="#00BFFF" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" Grid.Column="0" Margin="0,0,10,0" Click="ScanButton_Click" AutomationProperties.Name="扫描垃圾" AutomationProperties.Description="扫描系统中的垃圾文件" TabIndex="22"/>
+                            <Button x:Name="PreviewButton" Content="预览清理" Width="150" Height="50" Background="#2A2A2A" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" Grid.Column="1" Margin="10,0,10,0" Click="PreviewButton_Click" AutomationProperties.Name="预览清理" AutomationProperties.Description="预览将要清理的文件" TabIndex="23"/>
+                            <Button x:Name="CleanButton" Content="开始清理" Width="150" Height="50" Background="#00BFFF" Foreground="#FFFFFF" FontSize="14" FontWeight="Bold" Grid.Column="2" Margin="10,0,0,0" Click="CleanButton_Click" AutomationProperties.Name="开始清理" AutomationProperties.Description="开始清理垃圾文件" TabIndex="24"/>
                         </Grid>
                         
                         <!-- 清理结果 -->
@@ -856,61 +313,133 @@
                     
                     <!-- 系统优化模块 -->
                     <Grid x:Name="SystemOptimizerPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:SystemOptimizer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- AppData监控模块 -->
                     <Grid x:Name="AppDataMonitorPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:AppDataMonitor HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 软件卸载模块 -->
                     <Grid x:Name="SoftwareUninstallerPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:SoftwareUninstaller HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 超级瘦身模块 -->
                     <Grid x:Name="SuperSlimmerPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:SuperSlimmer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 内存优化模块 -->
                     <Grid x:Name="MemoryOptimizerPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:MemoryOptimizer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 硬件概览模块 -->
                     <Grid x:Name="HardwareOverviewPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:HardwareOverview HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 系统工具箱模块 -->
                     <Grid x:Name="SystemToolboxPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:SystemToolbox HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 系统静默查杀模块 -->
                     <Grid x:Name="SystemScannerPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:SystemScanner HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 文件粉碎模块 -->
                     <Grid x:Name="FileShredderPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:FileShredder HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 弹窗拦截模块 -->
                     <Grid x:Name="PopupBlockerPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:PopupBlocker HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 冰点还原模块 -->
                     <Grid x:Name="FreezeRestorePage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:FreezeRestore HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
                     <!-- 基础设置&安全中心模块 -->
                     <Grid x:Name="SettingsAndSecurityPage" Visibility="Collapsed">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform X="0" Y="0"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
                         <local:SettingsAndSecurity HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                 </Grid>
@@ -919,13 +448,13 @@
                 <Border Height="40" Background="#1E1E1E" VerticalAlignment="Bottom">
                     <Grid>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0">
-                            <TextBlock Text="CPU: 0%" FontSize="12" Foreground="#888888" Margin="0,0,20,0"/>
-                            <TextBlock Text="内存: 0%" FontSize="12" Foreground="#888888" Margin="0,0,20,0"/>
-                            <TextBlock Text="C盘: 0%" FontSize="12" Foreground="#888888"/>
+                            <TextBlock x:Name="CpuUsageText" Text="CPU: 0%" FontSize="12" Foreground="#888888" Margin="0,0,20,0"/>
+                            <TextBlock x:Name="MemoryUsageText" Text="内存: 0%" FontSize="12" Foreground="#888888" Margin="0,0,20,0"/>
+                            <TextBlock x:Name="DiskUsageText" Text="C盘: 0%" FontSize="12" Foreground="#888888"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0">
-                            <Button Content="日志" Width="60" Height="25" Background="#2A2A2A" Foreground="#FFFFFF" BorderThickness="0" Margin="0,0,10,0"/>
-                            <Button Content="修复" Width="60" Height="25" Background="#2A2A2A" Foreground="#FFFFFF" BorderThickness="0"/>
+                            <Button Content="日志" Width="60" Height="25" Background="#2A2A2A" Foreground="#FFFFFF" BorderThickness="0" Margin="0,0,10,0" AutomationProperties.Name="日志" AutomationProperties.Description="查看系统日志" TabIndex="42"/>
+                            <Button Content="修复" Width="60" Height="25" Background="#2A2A2A" Foreground="#FFFFFF" BorderThickness="0" AutomationProperties.Name="修复" AutomationProperties.Description="修复系统问题" TabIndex="43"/>
                         </StackPanel>
                     </Grid>
                 </Border>
