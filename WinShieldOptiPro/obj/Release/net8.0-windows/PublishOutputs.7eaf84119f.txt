@@ -1,0 +1,7 @@
+D:\Desktop\WinShield OptiPro\WinShieldOptiPro\publish\WinShieldOptiPro.exe
+D:\Desktop\WinShield OptiPro\WinShieldOptiPro\publish\WinShieldOptiPro.dll
+D:\Desktop\WinShield OptiPro\WinShieldOptiPro\publish\WinShieldOptiPro.deps.json
+D:\Desktop\WinShield OptiPro\WinShieldOptiPro\publish\WinShieldOptiPro.runtimeconfig.json
+D:\Desktop\WinShield OptiPro\WinShieldOptiPro\publish\WinShieldOptiPro.pdb
+D:\Desktop\WinShield OptiPro\WinShieldOptiPro\publish\System.Management.dll
+D:\Desktop\WinShield OptiPro\WinShieldOptiPro\publish\runtimes\win\lib\net8.0\System.Management.dll

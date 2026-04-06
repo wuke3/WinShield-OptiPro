@@ -1,0 +1,104 @@
+<UserControl x:Class="WinShieldOptiPro.MemoryOptimizer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- 标题栏 -->
+        <Border Grid.Row="0" Background="#1E1E2E" BorderThickness="0 0 0 1" BorderBrush="#3A3A5A">
+            <StackPanel Orientation="Horizontal" Margin="20,10,20,10">
+                <TextBlock Text="内存智能优化" FontSize="18" FontWeight="Bold" Foreground="#00BFFF"/>
+                <TextBlock Text=" - 释放闲置内存，提升系统流畅度" FontSize="14" Foreground="#888" Margin="10,0,0,0"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- 主内容区 -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- 内存状态卡片 -->
+            <Border Grid.Row="0" Background="#25253A" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <TextBlock Text="总内存" FontSize="14" Foreground="#888"/>
+                        <TextBlock x:Name="TotalMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#00BFFF" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                        <TextBlock Text="已用内存" FontSize="14" Foreground="#888"/>
+                        <TextBlock x:Name="UsedMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#FF6B6B" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                        <TextBlock Text="可用内存" FontSize="14" Foreground="#888"/>
+                        <TextBlock x:Name="AvailableMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#4ECDC4" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                        <TextBlock Text="可释放内存" FontSize="14" Foreground="#888"/>
+                        <TextBlock x:Name="FreedMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#FFD166" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            <!-- 内存使用进度条 -->
+            <Border Grid.Row="1" Background="#25253A" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="内存使用情况" FontSize="14" Foreground="#888" Margin="0,0,0,10"/>
+                    <ProgressBar x:Name="MemoryUsageBar" Height="20" Background="#3A3A5A" Foreground="#00BFFF" BorderThickness="0"/>
+                    <TextBlock x:Name="MemoryUsageText" Text="0%" FontSize="12" Foreground="#888" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- 操作按钮区 -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,20">
+                <Button x:Name="OptimizeButton" Content="一键内存加速" Width="150" Height="40" Background="#00BFFF" Foreground="White" BorderThickness="0" FontWeight="Bold" Margin="0,0,10,0"/>
+                <Button x:Name="BackgroundOptimizeButton" Content="后台智能优化" Width="150" Height="40" Background="#4ECDC4" Foreground="White" BorderThickness="0" FontWeight="Bold" Margin="0,0,10,0"/>
+                <Button x:Name="ProcessOptimizeButton" Content="进程内存管控" Width="150" Height="40" Background="#FFD166" Foreground="White" BorderThickness="0" FontWeight="Bold" Margin="0,0,10,0"/>
+                <ToggleButton x:Name="AutoOptimizeToggle" Content="自动优化" Width="120" Height="40" Background="#3A3A5A" Foreground="White" BorderThickness="0" FontWeight="Bold"/>
+            </StackPanel>
+            
+            <!-- 进程列表 -->
+            <Border Grid.Row="3" Background="#25253A" CornerRadius="8" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="进程内存占用" FontSize="14" Foreground="#888" Margin="0,0,0,10"/>
+                    <DataGrid x:Name="ProcessList" AutoGenerateColumns="False" Background="#1E1E2E" Foreground="#FFF" BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="进程名称" Binding="{Binding ProcessName}" Width="*"/>
+                            <DataGridTextColumn Header="内存占用" Binding="{Binding MemoryUsage}" Width="120"/>
+                            <DataGridTextColumn Header="状态" Binding="{Binding Status}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </Grid>
+        
+        <!-- 底部状态栏 -->
+        <Border Grid.Row="2" Background="#1E1E2E" BorderThickness="1 0 0 0" BorderBrush="#3A3A5A">
+            <StackPanel Orientation="Horizontal" Margin="20,10,20,10" HorizontalAlignment="Right">
+                <TextBlock x:Name="StatusText" Text="就绪" FontSize="14" Foreground="#4ECDC4"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

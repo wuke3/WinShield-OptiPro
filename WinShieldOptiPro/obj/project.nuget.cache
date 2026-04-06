@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "3fxNsJehB7Q=",
+  "success": true,
+  "projectFilePath": "D:\\Desktop\\WinShield OptiPro\\WinShieldOptiPro\\WinShieldOptiPro.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\wuke\\.nuget\\packages\\system.codedom\\8.0.0\\system.codedom.8.0.0.nupkg.sha512",
+    "C:\\Users\\wuke\\.nuget\\packages\\system.management\\8.0.0\\system.management.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

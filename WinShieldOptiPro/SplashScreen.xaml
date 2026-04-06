@@ -1,0 +1,80 @@
+<Window x:Class="WinShieldOptiPro.SplashScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinShieldOptiPro"
+        mc:Ignorable="d"
+        Title="SplashScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Width="800" Height="600"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <!-- 背景效果 -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#0A0A0A" Offset="0"/>
+                <GradientStop Color="#1A1A2E" Offset="0.5"/>
+                <GradientStop Color="#16213E" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- 粒子背景 -->
+        <Canvas x:Name="ParticleCanvas" Width="800" Height="600"/>
+
+        <!-- 中心内容容器 -->
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo容器 -->
+            <Grid Grid.Row="0" Width="250" Height="250" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Logo发光效果 -->
+                <Ellipse Width="220" Height="220" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#2000BFFF" Offset="0"/>
+                            <GradientStop Color="#0000BFFF" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+
+                <!-- Logo图片 -->
+                <Image x:Name="LogoImage" Source="pack://application:,,,/logo.png" Width="180" Height="180" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0">
+                    <Image.Effect>
+                        <DropShadowEffect Color="#00BFFF" BlurRadius="30" Opacity="0.8"/>
+                    </Image.Effect>
+                </Image>
+            </Grid>
+
+            <!-- 软件名称 -->
+            <TextBlock Grid.Row="1" x:Name="AppNameText" Text="WinShield OptiPro" FontSize="32" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" Margin="0,20,0,0" Opacity="0">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#00BFFF" BlurRadius="15" Opacity="0.9"/>
+                </TextBlock.Effect>
+            </TextBlock>
+
+            <!-- 加载状态文本 -->
+            <TextBlock Grid.Row="2" x:Name="StatusText" Text="" FontSize="16" Foreground="#00BFFF" HorizontalAlignment="Center" Margin="0,15,0,0" Opacity="0">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#00BFFF" BlurRadius="8" Opacity="0.8"/>
+                </TextBlock.Effect>
+            </TextBlock>
+
+            <!-- 科技加载条 -->
+            <Grid Grid.Row="3" HorizontalAlignment="Center" Margin="0,25,0,0" Width="400" Height="8" Opacity="0">
+                <Border x:Name="ProgressBackground" Background="#2A2A2A" CornerRadius="4"/>
+                <Border x:Name="ProgressBorder" Background="#00BFFF" CornerRadius="4" Width="0" HorizontalAlignment="Left">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#00BFFF" BlurRadius="20" Opacity="0.9"/>
+                    </Border.Effect>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- 版本信息 -->
+        <TextBlock x:Name="VersionText" Text="WinShield OptiPro v1.0" FontSize="12" Foreground="#666666" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,25" Opacity="0"/>
+    </Grid>
+</Window>
