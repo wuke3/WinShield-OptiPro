@@ -14,10 +14,10 @@
         </Grid.RowDefinitions>
         
         <!-- 标题栏 -->
-        <Border Grid.Row="0" Background="#1E1E2E" BorderThickness="0 0 0 1" BorderBrush="#3A3A5A">
+        <Border Grid.Row="0" Background="{StaticResource SecondaryBackground}" BorderThickness="0 0 0 1" BorderBrush="{StaticResource AccentColor}">
             <StackPanel Orientation="Horizontal" Margin="20,10,20,10">
-                <TextBlock Text="内存智能优化" FontSize="18" FontWeight="Bold" Foreground="#00BFFF"/>
-                <TextBlock Text=" - 释放闲置内存，提升系统流畅度" FontSize="14" Foreground="#888" Margin="10,0,0,0"/>
+                <TextBlock Text="内存智能优化" Style="{StaticResource SubtitleText}"/>
+                <TextBlock Text=" - 释放闲置内存，提升系统流畅度" Style="{StaticResource CaptionText}" Margin="10,0,0,0"/>
             </StackPanel>
         </Border>
         
@@ -31,7 +31,7 @@
             </Grid.RowDefinitions>
             
             <!-- 内存状态卡片 -->
-            <Border Grid.Row="0" Background="#25253A" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+            <Border Grid.Row="0" Style="{StaticResource CardBorder}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -41,49 +41,49 @@
                     </Grid.ColumnDefinitions>
                     
                     <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                        <TextBlock Text="总内存" FontSize="14" Foreground="#888"/>
-                        <TextBlock x:Name="TotalMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#00BFFF" Margin="0,5,0,0"/>
+                        <TextBlock Text="总内存" Style="{StaticResource CaptionText}"/>
+                        <TextBlock x:Name="TotalMemoryText" Text="0 GB" Style="{StaticResource BodyText}" FontWeight="Bold" Foreground="{StaticResource AccentColor}" Margin="0,5,0,0"/>
                     </StackPanel>
                     
                     <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                        <TextBlock Text="已用内存" FontSize="14" Foreground="#888"/>
-                        <TextBlock x:Name="UsedMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#FF6B6B" Margin="0,5,0,0"/>
+                        <TextBlock Text="已用内存" Style="{StaticResource CaptionText}"/>
+                        <TextBlock x:Name="UsedMemoryText" Text="0 GB" Style="{StaticResource BodyText}" FontWeight="Bold" Foreground="{StaticResource WarningColor}" Margin="0,5,0,0"/>
                     </StackPanel>
                     
                     <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                        <TextBlock Text="可用内存" FontSize="14" Foreground="#888"/>
-                        <TextBlock x:Name="AvailableMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#4ECDC4" Margin="0,5,0,0"/>
+                        <TextBlock Text="可用内存" Style="{StaticResource CaptionText}"/>
+                        <TextBlock x:Name="AvailableMemoryText" Text="0 GB" Style="{StaticResource BodyText}" FontWeight="Bold" Foreground="{StaticResource SuccessColor}" Margin="0,5,0,0"/>
                     </StackPanel>
                     
                     <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-                        <TextBlock Text="可释放内存" FontSize="14" Foreground="#888"/>
-                        <TextBlock x:Name="FreedMemoryText" Text="0 GB" FontSize="18" FontWeight="Bold" Foreground="#FFD166" Margin="0,5,0,0"/>
+                        <TextBlock Text="可释放内存" Style="{StaticResource CaptionText}"/>
+                        <TextBlock x:Name="FreedMemoryText" Text="0 GB" Style="{StaticResource BodyText}" FontWeight="Bold" Foreground="#FFD166" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Grid>
             </Border>
             
             <!-- 内存使用进度条 -->
-            <Border Grid.Row="1" Background="#25253A" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+            <Border Grid.Row="1" Style="{StaticResource CardBorder}">
                 <StackPanel>
-                    <TextBlock Text="内存使用情况" FontSize="14" Foreground="#888" Margin="0,0,0,10"/>
-                    <ProgressBar x:Name="MemoryUsageBar" Height="20" Background="#3A3A5A" Foreground="#00BFFF" BorderThickness="0"/>
-                    <TextBlock x:Name="MemoryUsageText" Text="0%" FontSize="12" Foreground="#888" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                    <TextBlock Text="内存使用情况" Style="{StaticResource CaptionText}" Margin="0,0,0,10"/>
+                    <ProgressBar x:Name="MemoryUsageBar" Style="{StaticResource CustomProgressBar}" Height="20"/>
+                    <TextBlock x:Name="MemoryUsageText" Text="0%" Style="{StaticResource CaptionText}" HorizontalAlignment="Right" Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
             
             <!-- 操作按钮区 -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,20">
-                <Button x:Name="OptimizeButton" Content="一键内存加速" Width="150" Height="40" Background="#00BFFF" Foreground="White" BorderThickness="0" FontWeight="Bold" Margin="0,0,10,0"/>
-                <Button x:Name="BackgroundOptimizeButton" Content="后台智能优化" Width="150" Height="40" Background="#4ECDC4" Foreground="White" BorderThickness="0" FontWeight="Bold" Margin="0,0,10,0"/>
-                <Button x:Name="ProcessOptimizeButton" Content="进程内存管控" Width="150" Height="40" Background="#FFD166" Foreground="White" BorderThickness="0" FontWeight="Bold" Margin="0,0,10,0"/>
-                <ToggleButton x:Name="AutoOptimizeToggle" Content="自动优化" Width="120" Height="40" Background="#3A3A5A" Foreground="White" BorderThickness="0" FontWeight="Bold"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,20" HorizontalAlignment="Left">
+                <Button x:Name="OptimizeButton" Content="一键内存加速" Style="{StaticResource PrimaryButton}"/>
+                <Button x:Name="BackgroundOptimizeButton" Content="后台智能优化" Style="{StaticResource SecondaryButton}" Background="{StaticResource SuccessColor}"/>
+                <Button x:Name="ProcessOptimizeButton" Content="进程内存管控" Style="{StaticResource SecondaryButton}" Background="#FFD166"/>
+                <ToggleButton x:Name="AutoOptimizeToggle" Content="自动优化" Style="{StaticResource CustomToggleButton}" Width="120" Height="40"/>
             </StackPanel>
             
             <!-- 进程列表 -->
-            <Border Grid.Row="3" Background="#25253A" CornerRadius="8" Padding="20">
+            <Border Grid.Row="3" Style="{StaticResource CardBorder}">
                 <StackPanel>
-                    <TextBlock Text="进程内存占用" FontSize="14" Foreground="#888" Margin="0,0,0,10"/>
-                    <DataGrid x:Name="ProcessList" AutoGenerateColumns="False" Background="#1E1E2E" Foreground="#FFF" BorderThickness="0">
+                    <TextBlock Text="进程内存占用" Style="{StaticResource CaptionText}" Margin="0,0,0,10"/>
+                    <DataGrid x:Name="ProcessList" AutoGenerateColumns="False" Style="{StaticResource CustomDataGrid}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="进程名称" Binding="{Binding ProcessName}" Width="*"/>
                             <DataGridTextColumn Header="内存占用" Binding="{Binding MemoryUsage}" Width="120"/>
@@ -95,9 +95,9 @@
         </Grid>
         
         <!-- 底部状态栏 -->
-        <Border Grid.Row="2" Background="#1E1E2E" BorderThickness="1 0 0 0" BorderBrush="#3A3A5A">
+        <Border Grid.Row="2" Background="{StaticResource SecondaryBackground}" BorderThickness="1 0 0 0" BorderBrush="{StaticResource AccentColor}">
             <StackPanel Orientation="Horizontal" Margin="20,10,20,10" HorizontalAlignment="Right">
-                <TextBlock x:Name="StatusText" Text="就绪" FontSize="14" Foreground="#4ECDC4"/>
+                <TextBlock x:Name="StatusText" Text="就绪" Style="{StaticResource BodyText}" Foreground="{StaticResource SuccessColor}"/>
             </StackPanel>
         </Border>
     </Grid>

@@ -41,6 +41,9 @@ namespace WinShieldOptiPro
             public string Status { get; set; }
         }
 
+        // 使用ObservableCollection实现数据绑定
+        private System.Collections.ObjectModel.ObservableCollection<CleaningHistoryItem> cleaningHistoryItems = new System.Collections.ObjectModel.ObservableCollection<CleaningHistoryItem>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -49,6 +52,9 @@ namespace WinShieldOptiPro
         }
         
 
+        
+        // 缓存提示文本，避免重复创建GlassTooltip
+        private string lastTooltipText = string.Empty;
         
         private void AddTooltipEvents()
         {
@@ -76,15 +82,26 @@ namespace WinShieldOptiPro
         
         private void ShowGlassTooltip(System.Windows.Controls.Button button, string text)
         {
-            if (glassTooltip == null) return;
+            // 只有当提示文本变化时才创建和显示GlassTooltip
+            if (text == lastTooltipText && glassTooltip != null && glassTooltip.Visibility == Visibility.Visible)
+                return;
 
             try
             {
+                // 延迟初始化GlassTooltip
+                if (glassTooltip == null)
+                {
+                    glassTooltip = new GlassTooltip();
+                    glassTooltip.Show();
+                    glassTooltip.Hide();
+                }
+
                 // 获取按钮在屏幕上的位置
                 System.Windows.Point point = button.PointToScreen(new System.Windows.Point(button.ActualWidth / 2, button.ActualHeight));
 
                 // 显示毛玻璃悬浮提示
                 glassTooltip.ShowTooltip(text, point.X - 100, point.Y + 10);
+                lastTooltipText = text;
             }
             catch
             {
@@ -92,49 +109,70 @@ namespace WinShieldOptiPro
             }
         }
 
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-    {
-        // 初始化数据
-        UpdateDiskSpaceInfo();
-        UpdateSystemHealthScore();
-        LoadCleaningHistory();
+    // 缓存数据，用于检测变化
+        private double lastUsagePercentage = -1;
+        private int lastHealthScore = -1;
+        private string lastTotalSpace = string.Empty;
+        private string lastUsedSpace = string.Empty;
+        private string lastFreeSpace = string.Empty;
+        private int lastCpuUsage = -1;
+        private int lastMemoryUsage = -1;
+        
+        // 性能计数器
+        private System.Diagnostics.PerformanceCounter cpuCounter;
+        private System.Diagnostics.PerformanceCounter memoryCounter;
 
-        // 设置定时更新
-        updateTimer = new System.Timers.Timer(5000); // 每5秒更新一次
-        updateTimer.Elapsed += (s, args) => Dispatcher.Invoke(UpdateDiskSpaceInfo);
-        updateTimer.Start();
-
-        // 初始化托盘图标
-        InitializeTrayIcon();
-
-        // 延迟初始化毛玻璃悬浮提示
-        DispatcherTimer tooltipInitTimer = new DispatcherTimer
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Interval = TimeSpan.FromSeconds(1)
-        };
-        tooltipInitTimer.Tick += (s, args) =>
-        {
-            tooltipInitTimer.Stop();
-            try
+            // 初始化数据
+            UpdateDiskSpaceInfo();
+            UpdateSystemHealthScore();
+            LoadCleaningHistory();
+            
+            // 初始化性能计数器
+            InitializePerformanceCounters();
+            UpdateStatusBar();
+
+            // 设置定时更新 - 降低频率到10秒
+            updateTimer = new System.Timers.Timer(10000); // 每10秒更新一次
+            updateTimer.Elapsed += (s, args) => Dispatcher.Invoke(() => 
             {
-                glassTooltip = new GlassTooltip();
-                glassTooltip.Show();
-                glassTooltip.Hide();
-                // 添加悬停提示事件
-                AddTooltipEvents();
-            }
-            catch (Exception ex)
+                UpdateDiskSpaceInfo();
+                UpdateStatusBar();
+            });
+            updateTimer.Start();
+
+            // 初始化托盘图标
+            InitializeTrayIcon();
+
+            // 延迟初始化毛玻璃悬浮提示
+            DispatcherTimer tooltipInitTimer = new DispatcherTimer
             {
-                System.Diagnostics.Debug.WriteLine($"GlassTooltip初始化失败: {ex.Message}");
-            }
-            finally
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            tooltipInitTimer.Tick += (s, args) =>
             {
-                // 标记窗口初始化完成
-                isInitialized = true;
-            }
-        };
-        tooltipInitTimer.Start();
-    }
+                tooltipInitTimer.Stop();
+                try
+                {
+                    glassTooltip = new GlassTooltip();
+                    glassTooltip.Show();
+                    glassTooltip.Hide();
+                    // 添加悬停提示事件
+                    AddTooltipEvents();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"GlassTooltip初始化失败: {ex.Message}");
+                }
+                finally
+                {
+                    // 标记窗口初始化完成
+                    isInitialized = true;
+                }
+            };
+            tooltipInitTimer.Start();
+        }
     
     private void InitializeTrayIcon()
         {
@@ -177,6 +215,59 @@ namespace WinShieldOptiPro
         contextMenu.Items.Add(openItem);
         contextMenu.Items.Add(exitItem);
         trayIcon.ContextMenuStrip = contextMenu;
+    }
+    
+    // 页面切换方法，添加动画效果
+    private void SwitchPage(Grid targetPage, System.Windows.Controls.Button senderButton)
+    {
+        // 先隐藏所有可见页面
+        Grid[] allPages = { HomePage, DiskSpaceAnalyzerPage, JunkCleanPage, SystemOptimizerPage, 
+                          MemoryOptimizerPage, AppDataMonitorPage, SoftwareUninstallerPage, 
+                          SuperSlimmerPage, HardwareOverviewPage, SystemToolboxPage, 
+                          SystemScannerPage, FileShredderPage, PopupBlockerPage, 
+                          FreezeRestorePage, SettingsAndSecurityPage };
+        
+        foreach (var page in allPages)
+        {
+            if (page.Visibility == Visibility.Visible && page != targetPage)
+            {
+                page.Visibility = Visibility.Collapsed;
+            }
+        }
+        
+        // 显示目标页面
+        targetPage.Visibility = Visibility.Visible;
+        targetPage.Opacity = 0;
+        
+        // 应用进入动画
+        Storyboard fadeInStoryboard = (Storyboard)FindResource("PageFadeIn");
+        if (fadeInStoryboard != null)
+        {
+            fadeInStoryboard.Begin(targetPage);
+        }
+        
+        // 更新按钮状态
+        StackPanel buttonPanel = (StackPanel)((Grid)senderButton.Parent).Children;
+        foreach (System.Windows.Controls.Button button in buttonPanel.Children)
+        {
+            if (button != senderButton)
+            {
+                button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
+            }
+        }
+        senderButton.Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+    }
+    
+    // 显示加载指示器
+    private void ShowLoading()
+    {
+        LoadingIndicator.Visibility = Visibility.Visible;
+    }
+    
+    // 隐藏加载指示器
+    private void HideLoading()
+    {
+        LoadingIndicator.Visibility = Visibility.Collapsed;
     }
     
     private void TrayIcon_MouseClick(object sender, Forms.MouseEventArgs e)
@@ -232,27 +323,53 @@ namespace WinShieldOptiPro
                 long usedBytes = totalBytes - freeBytes;
                 double usagePercentage = (double)usedBytes / totalBytes * 100;
 
-                // 更新UI
-                TotalSpaceText.Text = $"{Math.Round(totalBytes / (1024.0 * 1024.0 * 1024.0), 2)} GB";
-                UsedSpaceText.Text = $"{Math.Round(usedBytes / (1024.0 * 1024.0 * 1024.0), 2)} GB";
-                FreeSpaceText.Text = $"{Math.Round(freeBytes / (1024.0 * 1024.0 * 1024.0), 2)} GB";
-                UsagePercentageText.Text = $"{Math.Round(usagePercentage, 1)}%";
+                // 格式化数据
+                string totalSpace = $"{Math.Round(totalBytes / (1024.0 * 1024.0 * 1024.0), 2)} GB";
+                string usedSpace = $"{Math.Round(usedBytes / (1024.0 * 1024.0 * 1024.0), 2)} GB";
+                string freeSpace = $"{Math.Round(freeBytes / (1024.0 * 1024.0 * 1024.0), 2)} GB";
+                string usagePercentageStr = $"{Math.Round(usagePercentage, 1)}%";
 
-                // 更新进度条
-                SpaceProgressBar.Value = usagePercentage;
-                
-                // 设置进度条颜色
-                if (usagePercentage > 90)
+                // 只在数据变化时更新UI
+                if (totalSpace != lastTotalSpace)
                 {
-                    SpaceProgressBar.Foreground = new SolidColorBrush(Colors.Red);
+                    TotalSpaceText.Text = totalSpace;
+                    lastTotalSpace = totalSpace;
                 }
-                else if (usagePercentage > 70)
+
+                if (usedSpace != lastUsedSpace)
                 {
-                    SpaceProgressBar.Foreground = new SolidColorBrush(Colors.Orange);
+                    UsedSpaceText.Text = usedSpace;
+                    lastUsedSpace = usedSpace;
                 }
-                else
+
+                if (freeSpace != lastFreeSpace)
                 {
-                    SpaceProgressBar.Foreground = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+                    FreeSpaceText.Text = freeSpace;
+                    lastFreeSpace = freeSpace;
+                }
+
+                if (Math.Abs(usagePercentage - lastUsagePercentage) > 0.1) // 只有变化超过0.1%时才更新
+                {
+                    UsagePercentageText.Text = usagePercentageStr;
+                    SpaceProgressBar.Value = usagePercentage;
+                    lastUsagePercentage = usagePercentage;
+
+                    // 设置进度条颜色
+                    if (usagePercentage > 90)
+                    {
+                        SpaceProgressBar.Foreground = new SolidColorBrush(Colors.Red);
+                    }
+                    else if (usagePercentage > 70)
+                    {
+                        SpaceProgressBar.Foreground = new SolidColorBrush(Colors.Orange);
+                    }
+                    else
+                    {
+                        SpaceProgressBar.Foreground = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+                    }
+
+                    // 同时更新系统健康度
+                    UpdateSystemHealthScore();
                 }
             }
         }
@@ -275,36 +392,111 @@ namespace WinShieldOptiPro
 
                 // 计算健康度评分
                 int healthScore = 100;
+                string warningText = string.Empty;
+                Brush warningBrush = null;
+                Brush scoreBrush = null;
+
                 if (freePercentage < 10)
                 {
                     healthScore = 20;
-                    RiskWarningText.Text = "C盘空间严重不足，建议立即清理";
-                    RiskWarningText.Foreground = new SolidColorBrush(Colors.Red);
-                    HealthScoreText.Foreground = new SolidColorBrush(Colors.Red);
+                    warningText = "C盘空间严重不足，建议立即清理";
+                    warningBrush = new SolidColorBrush(Colors.Red);
+                    scoreBrush = new SolidColorBrush(Colors.Red);
                 }
                 else if (freePercentage < 20)
                 {
                     healthScore = 40;
-                    RiskWarningText.Text = "C盘空间不足，建议清理";
-                    RiskWarningText.Foreground = new SolidColorBrush(Colors.Orange);
-                    HealthScoreText.Foreground = new SolidColorBrush(Colors.Orange);
+                    warningText = "C盘空间不足，建议清理";
+                    warningBrush = new SolidColorBrush(Colors.Orange);
+                    scoreBrush = new SolidColorBrush(Colors.Orange);
                 }
                 else if (freePercentage < 30)
                 {
                     healthScore = 60;
-                    RiskWarningText.Text = "C盘空间紧张，建议定期清理";
-                    RiskWarningText.Foreground = new SolidColorBrush(Colors.Yellow);
-                    HealthScoreText.Foreground = new SolidColorBrush(Colors.Yellow);
+                    warningText = "C盘空间紧张，建议定期清理";
+                    warningBrush = new SolidColorBrush(Colors.Yellow);
+                    scoreBrush = new SolidColorBrush(Colors.Yellow);
                 }
                 else
                 {
                     healthScore = 100;
-                    RiskWarningText.Text = "系统状态良好，无风险";
-                    RiskWarningText.Foreground = new SolidColorBrush(Colors.Green);
-                    HealthScoreText.Foreground = new SolidColorBrush(Colors.Green);
+                    warningText = "系统状态良好，无风险";
+                    warningBrush = new SolidColorBrush(Colors.Green);
+                    scoreBrush = new SolidColorBrush(Colors.Green);
                 }
 
-                HealthScoreText.Text = healthScore.ToString();
+                // 只在健康度评分变化时更新UI
+                if (healthScore != lastHealthScore)
+                {
+                    HealthScoreText.Text = healthScore.ToString();
+                    HealthScoreText.Foreground = scoreBrush;
+                    RiskWarningText.Text = warningText;
+                    RiskWarningText.Foreground = warningBrush;
+                    lastHealthScore = healthScore;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // 处理异常
+        }
+    }
+
+    // 初始化性能计数器
+    private void InitializePerformanceCounters()
+    {
+        try
+        {
+            // 初始化CPU计数器
+            cpuCounter = new System.Diagnostics.PerformanceCounter("Processor", "% Processor Time", "_Total");
+            cpuCounter.NextValue(); // 第一次调用返回0，需要调用一次
+            
+            // 初始化内存计数器
+            memoryCounter = new System.Diagnostics.PerformanceCounter("Memory", "% Committed Bytes In Use");
+            memoryCounter.NextValue(); // 第一次调用返回0，需要调用一次
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"性能计数器初始化失败: {ex.Message}");
+        }
+    }
+
+    // 更新底部状态栏
+    private void UpdateStatusBar()
+    {
+        try
+        {
+            // 更新CPU使用率
+            if (cpuCounter != null)
+            {
+                int cpuUsage = (int)Math.Round(cpuCounter.NextValue());
+                if (cpuUsage != lastCpuUsage)
+                {
+                    CpuUsageText.Text = $"CPU: {cpuUsage}%";
+                    lastCpuUsage = cpuUsage;
+                }
+            }
+            
+            // 更新内存使用率
+            if (memoryCounter != null)
+            {
+                int memoryUsage = (int)Math.Round(memoryCounter.NextValue());
+                if (memoryUsage != lastMemoryUsage)
+                {
+                    MemoryUsageText.Text = $"内存: {memoryUsage}%";
+                    lastMemoryUsage = memoryUsage;
+                }
+            }
+            
+            // 更新C盘使用率
+            DriveInfo cDrive = new DriveInfo("C:");
+            if (cDrive.IsReady)
+            {
+                long totalBytes = cDrive.TotalSize;
+                long freeBytes = cDrive.AvailableFreeSpace;
+                long usedBytes = totalBytes - freeBytes;
+                int diskUsage = (int)Math.Round((double)usedBytes / totalBytes * 100);
+                DiskUsageText.Text = $"C盘: {diskUsage}%";
             }
         }
         catch (Exception ex)
@@ -315,16 +507,17 @@ namespace WinShieldOptiPro
 
     private void LoadCleaningHistory()
     {
+        // 清空现有数据
+        cleaningHistoryItems.Clear();
+        
         // 模拟清理历史数据
-        List<CleaningHistoryItem> history = new List<CleaningHistoryItem>
-        {
-            new CleaningHistoryItem { Time = "2026-03-29 10:30", Type = "系统垃圾", FreedSpace = "2.5 GB", Status = "成功" },
-            new CleaningHistoryItem { Time = "2026-03-28 15:45", Type = "浏览器缓存", FreedSpace = "1.2 GB", Status = "成功" },
-            new CleaningHistoryItem { Time = "2026-03-27 09:15", Type = "注册表清理", FreedSpace = "0.5 GB", Status = "成功" },
-            new CleaningHistoryItem { Time = "2026-03-26 14:20", Type = "系统优化", FreedSpace = "0.8 GB", Status = "成功" }
-        };
+        cleaningHistoryItems.Add(new CleaningHistoryItem { Time = "2026-03-29 10:30", Type = "系统垃圾", FreedSpace = "2.5 GB", Status = "成功" });
+        cleaningHistoryItems.Add(new CleaningHistoryItem { Time = "2026-03-28 15:45", Type = "浏览器缓存", FreedSpace = "1.2 GB", Status = "成功" });
+        cleaningHistoryItems.Add(new CleaningHistoryItem { Time = "2026-03-27 09:15", Type = "注册表清理", FreedSpace = "0.5 GB", Status = "成功" });
+        cleaningHistoryItems.Add(new CleaningHistoryItem { Time = "2026-03-26 14:20", Type = "系统优化", FreedSpace = "0.8 GB", Status = "成功" });
 
-        CleaningHistoryDataGrid.ItemsSource = history;
+        // 设置ItemsSource为ObservableCollection
+        CleaningHistoryDataGrid.ItemsSource = cleaningHistoryItems;
     }
 
     public void QuickCleanButton_Click(object sender, RoutedEventArgs e)
@@ -359,18 +552,13 @@ namespace WinShieldOptiPro
             Status = "成功"
         };
         
-        // 更新数据网格
-        var history = CleaningHistoryDataGrid.ItemsSource as List<CleaningHistoryItem>;
-        if (history != null)
+        // 使用ObservableCollection添加新记录
+        cleaningHistoryItems.Insert(0, newItem);
+        
+        // 只保留最近10条记录
+        if (cleaningHistoryItems.Count > 10)
         {
-            history.Insert(0, newItem);
-            // 只保留最近10条记录
-            if (history.Count > 10)
-            {
-                history.RemoveAt(history.Count - 1);
-            }
-            CleaningHistoryDataGrid.ItemsSource = null;
-            CleaningHistoryDataGrid.ItemsSource = history;
+            cleaningHistoryItems.RemoveAt(cleaningHistoryItems.Count - 1);
         }
     }
 
@@ -401,334 +589,100 @@ namespace WinShieldOptiPro
     }
 
     private void DiskSpaceAnalyzerButton_Click(object sender, RoutedEventArgs e)
-        {
-            // 切换到空间分析页面
-            HomePage.Visibility = Visibility.Collapsed;
-            DiskSpaceAnalyzerPage.Visibility = Visibility.Visible;
-            JunkCleanPage.Visibility = Visibility.Collapsed;
-            SystemOptimizerPage.Visibility = Visibility.Collapsed;
-            MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-            AppDataMonitorPage.Visibility = Visibility.Collapsed;
-            SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-            SuperSlimmerPage.Visibility = Visibility.Collapsed;
-            HardwareOverviewPage.Visibility = Visibility.Collapsed;
-            SystemToolboxPage.Visibility = Visibility.Collapsed;
-            SystemScannerPage.Visibility = Visibility.Collapsed;
-            FileShredderPage.Visibility = Visibility.Collapsed;
-            SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-            
-            // 更新按钮状态
-            foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-            {
-                button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-            }
-            (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
-        }
+    {
+        // 切换到空间分析页面
+        SwitchPage(DiskSpaceAnalyzerPage, sender as System.Windows.Controls.Button);
+    }
 
     private void HomeButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到首页
-        HomePage.Visibility = Visibility.Visible;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(HomePage, sender as System.Windows.Controls.Button);
     }
 
     private void JunkCleanButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到垃圾清理页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Visible;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(JunkCleanPage, sender as System.Windows.Controls.Button);
     }
 
     private void SystemOptimizeButtonNav_Click(object sender, RoutedEventArgs e)
     {
         // 切换到系统优化页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Visible;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(SystemOptimizerPage, sender as System.Windows.Controls.Button);
     }
     
     private void AppDataMonitorButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到AppData监控页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Visible;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(AppDataMonitorPage, sender as System.Windows.Controls.Button);
     }
     
     private void SoftwareUninstallerButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到软件卸载页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Visible;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(SoftwareUninstallerPage, sender as System.Windows.Controls.Button);
     }
     
     private void SuperSlimmerButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到超级瘦身页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Visible;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(SuperSlimmerPage, sender as System.Windows.Controls.Button);
     }
     
     private void HardwareOverviewButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到硬件概览页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Visible;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(HardwareOverviewPage, sender as System.Windows.Controls.Button);
     }
     
     public void MemoryOptimizerButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到内存优化页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Visible;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(MemoryOptimizerPage, sender as System.Windows.Controls.Button);
     }
     
     private void SystemToolboxButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到系统工具箱页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Visible;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(SystemToolboxPage, sender as System.Windows.Controls.Button);
     }
     
     public void SystemScannerButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到系统静默查杀页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Visible;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(SystemScannerPage, sender as System.Windows.Controls.Button);
     }
 
     private void FileShredderButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到文件粉碎页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Visible;
-        SettingsAndSecurityPage.Visibility = Visibility.Collapsed;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(FileShredderPage, sender as System.Windows.Controls.Button);
     }
 
     private void SettingsAndSecurityButton_Click(object sender, RoutedEventArgs e)
     {
         // 切换到基础设置&安全中心页面
-        HomePage.Visibility = Visibility.Collapsed;
-        DiskSpaceAnalyzerPage.Visibility = Visibility.Collapsed;
-        JunkCleanPage.Visibility = Visibility.Collapsed;
-        SystemOptimizerPage.Visibility = Visibility.Collapsed;
-        MemoryOptimizerPage.Visibility = Visibility.Collapsed;
-        AppDataMonitorPage.Visibility = Visibility.Collapsed;
-        SoftwareUninstallerPage.Visibility = Visibility.Collapsed;
-        SuperSlimmerPage.Visibility = Visibility.Collapsed;
-        HardwareOverviewPage.Visibility = Visibility.Collapsed;
-        SystemToolboxPage.Visibility = Visibility.Collapsed;
-        SystemScannerPage.Visibility = Visibility.Collapsed;
-        FileShredderPage.Visibility = Visibility.Collapsed;
-        SettingsAndSecurityPage.Visibility = Visibility.Visible;
-        
-        // 更新按钮状态
-        foreach (System.Windows.Controls.Button button in ((StackPanel)((Grid)sender).Parent).Children)
-        {
-            button.Background = new SolidColorBrush(MediaColor.FromRgb(42, 42, 42));
-        }
-        (sender as System.Windows.Controls.Button).Background = new SolidColorBrush(MediaColor.FromRgb(0, 191, 255));
+        SwitchPage(SettingsAndSecurityPage, sender as System.Windows.Controls.Button);
+    }
+    
+    private void PopupBlockerButton_Click(object sender, RoutedEventArgs e)
+    {
+        // 切换到弹窗拦截页面
+        SwitchPage(PopupBlockerPage, sender as System.Windows.Controls.Button);
+    }
+
+    private void FreezeRestoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        // 切换到冰点还原页面
+        SwitchPage(FreezeRestorePage, sender as System.Windows.Controls.Button);
     }
 
     private void ScanButton_Click(object sender, RoutedEventArgs e)
     {
         // 模拟扫描过程
         ScanResultText.Text = "正在扫描垃圾文件...";
+        ShowLoading();
         
         // 启动异步扫描
         System.Threading.Tasks.Task.Run(() =>
@@ -833,6 +787,7 @@ namespace WinShieldOptiPro
             Dispatcher.Invoke(() =>
             {
                 ScanResultText.Text = $"扫描完成！可清理垃圾：{junkSizeStr}";
+                HideLoading();
             });
         });
     }
@@ -926,6 +881,7 @@ namespace WinShieldOptiPro
     {
         // 模拟清理过程
         CleanResultText.Text = "正在清理...";
+        ShowLoading();
         
         // 启动异步清理
         System.Threading.Tasks.Task.Run(() =>
@@ -1051,6 +1007,8 @@ namespace WinShieldOptiPro
                 // 刷新磁盘空间信息
                 UpdateDiskSpaceInfo();
                 UpdateSystemHealthScore();
+                
+                HideLoading();
             });
         });
     }
