@@ -133,7 +133,7 @@ namespace WinShieldOptiPro {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinShieldOptiPro;V1.0.0.0;component/fileshredder.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/WinShieldOptiPro;component/fileshredder.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\FileShredder.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
